@@ -42,7 +42,7 @@ namespace WinGetSpy
         /// <returns>
         /// The collection of the WinGet package information.
         /// </returns>
-        public static async Task<IReadOnlyList<WingetPackageInfo>> LoadCatalogAsync(
+        public static async Task<IReadOnlyList<WinGetPackageInfo>> LoadCatalogAsync(
             bool forceCacheCompile = false,
             GitHubFeedInfo feedInfo = default,
             CancellationToken cancellationToken = default)
@@ -94,7 +94,7 @@ namespace WinGetSpy
         /// <returns>
         /// The collection of the WinGet package information.
         /// </returns>
-        public static async Task<IReadOnlyList<WingetPackageInfo>> TryLoadLocalWinGetPackagesCacheAsync(string appDirectoryPath = default, GitHubFeedInfo feedInfo = default, CancellationToken cancellationToken = default)
+        public static async Task<IReadOnlyList<WinGetPackageInfo>> TryLoadLocalWinGetPackagesCacheAsync(string appDirectoryPath = default, GitHubFeedInfo feedInfo = default, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(appDirectoryPath))
                 appDirectoryPath = GetCacheDirectoryPath();
@@ -115,7 +115,7 @@ namespace WinGetSpy
             {
                 using (var fileStream = fileInfo.OpenRead())
                 {
-                    return await JsonSerializer.DeserializeAsync<IReadOnlyList<WingetPackageInfo>>(fileStream, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    return await JsonSerializer.DeserializeAsync<IReadOnlyList<WinGetPackageInfo>>(fileStream, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
             }
             catch { return default; }
@@ -162,7 +162,7 @@ namespace WinGetSpy
                 Path.GetTempPath(),
                 $"{Guid.NewGuid().ToString("n")}.zip");
 
-            var list = default(IReadOnlyList<WingetPackageInfo>);
+            var list = default(IReadOnlyList<WinGetPackageInfo>);
             var wingetPkgsZipFileUrl = feedInfo.ZipArchiveUri;
 
             using (var httpClient = new HttpClient())
@@ -213,7 +213,7 @@ namespace WinGetSpy
         /// <exception cref="FileNotFoundException">
         /// The specified file does not exists.
         /// </exception>
-        public static IEnumerable<WingetPackageInfo> EnumerateWinGetPackages(string zipFilePath)
+        public static IEnumerable<WinGetPackageInfo> EnumerateWinGetPackages(string zipFilePath)
         {
             if (!File.Exists(zipFilePath))
                 throw new FileNotFoundException($"File '{zipFilePath}' does not exists.");
@@ -290,7 +290,7 @@ namespace WinGetSpy
                             }
                         }
 
-                        yield return new WingetPackageInfo(
+                        yield return new WinGetPackageInfo(
                             packageIdentifier,
                             packageVersion,
                             installerType,

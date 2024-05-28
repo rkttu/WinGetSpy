@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using WinGetSpy.KnownPackages.DevTools.Python;
 
 namespace WinGetSpy.Test
 {
@@ -187,6 +188,19 @@ namespace WinGetSpy.Test
             Assert.True(object.Equals(
                 arm64BestSearchResult.GetBestInstallerUrlFor(Architecture.X86, considerCompatibility),
                 arm64BestSearchResult.X86InstallerUrl));
+        }
+
+        [Fact]
+        public async Task Test_KnownPackage()
+        {
+            // Arrange
+            var list = await WinGetCatalogManager.LoadCatalogAsync();
+
+            // Act
+            var result = list.GetJetBrainsPyCharmProfessionalEAP();
+
+            // Assert
+            Assert.NotNull(result);
         }
     }
 }

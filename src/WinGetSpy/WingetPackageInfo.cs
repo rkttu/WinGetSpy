@@ -5,10 +5,10 @@ namespace WinGetSpy
     /// <summary>
     /// Represents the information about the WinGet package.
     /// </summary>
-    public sealed class WingetPackageInfo
+    public sealed class WinGetPackageInfo
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="WingetPackageInfo"/> class.
+        /// Initializes a new instance of the <see cref="WinGetPackageInfo"/> class.
         /// </summary>
         /// <param name="packageIdentifier">
         /// The identifier of the package.
@@ -31,7 +31,7 @@ namespace WinGetSpy
         /// <param name="arm64InstallerUrl">
         /// The URL of the ARM64 installer.
         /// </param>
-        public WingetPackageInfo(
+        public WinGetPackageInfo(
             string packageIdentifier = default,
             string packageVersion = default,
             string installerType = default,

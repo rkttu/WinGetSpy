@@ -31,8 +31,8 @@ namespace WinGetSpy
         /// <returns>
         /// The collection of the WinGet package information that matches the specified keyword.
         /// </returns>
-        public static IEnumerable<WingetPackageInfo> SearchWinGetPackage(
-            this IReadOnlyList<WingetPackageInfo> list,
+        public static IEnumerable<WinGetPackageInfo> SearchWinGetPackage(
+            this IReadOnlyList<WinGetPackageInfo> list,
             string searchKeyword,
             bool matchFirstItemOnly,
             StringComparison comparisonType = default)
@@ -65,7 +65,7 @@ namespace WinGetSpy
         /// <returns>
         /// The best installer URL for this system.
         /// </returns>
-        public static Uri GetBestInstallerUrlFor(this WingetPackageInfo package,
+        public static Uri GetBestInstallerUrlFor(this WinGetPackageInfo package,
             Architecture? architecture = default, bool considerCompatibility = true)
         {
             architecture = architecture ?? RuntimeInformation.ProcessArchitecture;
@@ -132,7 +132,7 @@ namespace WinGetSpy
         /// <returns>
         /// The stream of the best installer for this system.
         /// </returns>
-        public static Task<Stream> GetBestInstallerStreamForAsync(this WingetPackageInfo package,
+        public static Task<Stream> GetBestInstallerStreamForAsync(this WinGetPackageInfo package,
             Architecture? architecture = default, bool considerCompatibility = true)
             => _httpClientFactory.Value.GetStreamAsync(GetBestInstallerUrlFor(package, architecture, considerCompatibility));
 
@@ -145,7 +145,7 @@ namespace WinGetSpy
         /// <returns>
         /// The stream of the x86 installer.
         /// </returns>
-        public static Task<Stream> GetX86InstallerStreamAsync(this WingetPackageInfo package)
+        public static Task<Stream> GetX86InstallerStreamAsync(this WinGetPackageInfo package)
             => _httpClientFactory.Value.GetStreamAsync(package.X86InstallerUrl);
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace WinGetSpy
         /// <returns>
         /// The stream of the x64 installer.
         /// </returns>
-        public static Task<Stream> GetX64InstallerStreamAsync(this WingetPackageInfo package)
+        public static Task<Stream> GetX64InstallerStreamAsync(this WinGetPackageInfo package)
             => _httpClientFactory.Value.GetStreamAsync(package.X64InstallerUrl);
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace WinGetSpy
         /// <returns>
         /// The stream of the ARM installer.
         /// </returns>
-        public static Task<Stream> GetArmInstallerStreamAsync(this WingetPackageInfo package)
+        public static Task<Stream> GetArmInstallerStreamAsync(this WinGetPackageInfo package)
             => _httpClientFactory.Value.GetStreamAsync(package.ArmInstallerUrl);
 
         /// <summary>
@@ -181,7 +181,22 @@ namespace WinGetSpy
         /// <returns>
         /// The stream of the ARM64 installer.
         /// </returns>
-        public static Task<Stream> GetArm64InstallerStreamAsync(this WingetPackageInfo package)
+        public static Task<Stream> GetArm64InstallerStreamAsync(this WinGetPackageInfo package)
             => _httpClientFactory.Value.GetStreamAsync(package.Arm64InstallerUrl);
+
+        /// <summary>
+        /// Gets the latest package information by the specified package identifier.
+        /// </summary>
+        /// <param name="list">
+        /// The collection of the WinGet package information.
+        /// </param>
+        /// <param name="packageIdentifier">
+        /// The package identifier to search for.
+        /// </param>
+        /// <returns>
+        /// The latest package information that matches the specified package identifier.
+        /// </returns>
+        public static WinGetPackageInfo GetLatestPackageInfo(this IReadOnlyList<WinGetPackageInfo> list, string packageIdentifier)
+            => list.Where(x => x.PackageIdentifier.Equals(packageIdentifier, StringComparison.Ordinal)).OrderByDescending(x => x.PackageVersion).FirstOrDefault();
     }
 }
