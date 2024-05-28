@@ -2,25 +2,11 @@ namespace WinGetSpy.Test
 {
     public class WinGetSpyTest
     {
-        private async Task<IReadOnlyList<WingetPackageInfo>?> PrepareAsync(bool forceCacheCompile, CancellationToken cancellationToken = default)
-        {
-            await Console.Out.WriteLineAsync("Checking local winget-pkgs cache...".AsMemory());
-            var list = await WinGetSpy.TryLoadLocalWinGetPackagesCacheAsync();
-
-            if (forceCacheCompile || list == default)
-            {
-                await Console.Out.WriteLineAsync("Compiling winget-pkgs cache from GitHub ZIP ball...".AsMemory());
-                await WinGetSpy.CompileJsonDataFromWinGetPackageAsync();
-            }
-
-            return list;
-        }
-
         [Fact]
         public async Task Test_Basic()
         {
             // Arrange, Act
-            var list = await PrepareAsync(false);
+            var list = await WinGetSpy.LoadCatalogAsync();
 
             // Assert
             Assert.NotNull(list);
@@ -34,7 +20,7 @@ namespace WinGetSpy.Test
             // Arrange
             var searchKeyword = "Microsoft.DotNet.SDK.8";
             var matchFirstItemOnly = true;
-            var list = await PrepareAsync(false);
+            var list = await WinGetSpy.LoadCatalogAsync();
 
             // Act
             var searchResult = list.SearchWinGetPackage(searchKeyword, matchFirstItemOnly);

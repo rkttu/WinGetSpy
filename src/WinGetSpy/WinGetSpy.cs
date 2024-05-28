@@ -18,6 +18,16 @@ namespace WinGetSpy
     {
         public static readonly string DefaultUserAgent = "WinGetSpy/1.0";
 
+        public static async Task<IReadOnlyList<WingetPackageInfo>> LoadCatalogAsync(bool forceCacheCompile = false, CancellationToken cancellationToken = default)
+        {
+            var list = await WinGetSpy.TryLoadLocalWinGetPackagesCacheAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            if (forceCacheCompile || list == default)
+                await WinGetSpy.CompileJsonDataFromWinGetPackageAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            return list;
+        }
+
         public static string GetCacheDirectoryPath()
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WinGetSpy");
 
