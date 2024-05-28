@@ -20,10 +20,25 @@ namespace WinGetSpy
 
         public static async Task<IReadOnlyList<WingetPackageInfo>> LoadCatalogAsync(bool forceCacheCompile = false, CancellationToken cancellationToken = default)
         {
-            var list = await WinGetSpy.TryLoadLocalWinGetPackagesCacheAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            var appDirectoryPath = GetCacheDirectoryPath();
+
+            if (!Directory.Exists(appDirectoryPath))
+                Directory.CreateDirectory(appDirectoryPath);
+
+            var list = await TryLoadLocalWinGetPackagesCacheAsync(
+                appDirectoryPath: appDirectoryPath,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
 
             if (forceCacheCompile || list == default)
-                await WinGetSpy.CompileJsonDataFromWinGetPackageAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            {
+                await CompileJsonDataFromWinGetPackageAsync(
+                    appDirectoryPath: appDirectoryPath,
+                    cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                list = await TryLoadLocalWinGetPackagesCacheAsync(
+                    appDirectoryPath: appDirectoryPath,
+                    cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
 
             return list;
         }
