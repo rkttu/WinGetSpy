@@ -50,8 +50,9 @@ var searchKeyword = "Microsoft.DotNet.SDK.8";
 var matchFirstItemOnly = true;
 var list = await WinGetCatalogManager.LoadCatalogAsync();
 
-var searchResult = list.SearchWinGetPackage(searchKeyword, matchFirstItemOnly);
-var downloadStream = await searchResult.GetBestInstallerStreamForAsync();
+var searchResult = list.SearchWinGetPackage(searchKeyword, matchFirstItemOnly).First();
+var downloadUri = searchResult.GetBestInstallerUrlFor();
+Console.WriteLine(downloadUri);
 
 ...
 ```
