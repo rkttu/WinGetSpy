@@ -21,6 +21,7 @@ WinGetSpy provides the following features:
 - **Get package information**: WinGetSpy provides a simple API to get package information.
 - **Get installer URLs and type**: WinGetSpy provides a simple API to get the installer URLs and type.
 - **Get package version**: WinGetSpy provides a simple API to get the package version.
+- **Browse well-known packages**: You can easily get information about well-known packages by referring to the namespaces under the WinGetSpy.KnownPackages namespace.
 
 ## How to use
 
