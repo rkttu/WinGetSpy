@@ -57,6 +57,20 @@ Console.WriteLine(downloadUri);
 ...
 ```
 
+### Browse well-known packages
+
+```csharp
+using WinGetSpy;
+using WinGetSpy.KnownPackages.DevTools.Python;
+
+...
+
+var result = list.GetJetBrainsPyCharmProfessionalEAP();
+Console.WriteLine(result.GetBestInstallerUrlFor());
+
+...
+```
+
 ## License
 
 This library follows Apache-2.0 license. See [LICENSE](./LICENSE) file for more information.
