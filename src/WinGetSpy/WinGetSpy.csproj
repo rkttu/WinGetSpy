@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<OutputType>Library</OutputType>
+		<AssemblyName>WinGetSpy</AssemblyName>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<RootNamespace>WinGetSpy</RootNamespace>
+		<Title>WinGetSpy</Title>
+		<Version>0.5.0</Version>
+		<Authors>Jung Hyun, Nam</Authors>
+		<Company>rkttu.com</Company>
+		<Product>WinGetSpy</Product>
+		<Description>A library to help you programmatically explore WinGet package feeds.</Description>
+		<Copyright>(c) 2024 Jung Hyun, Nam, All rights reserved.</Copyright>
+		<PackageProjectUrl>https://github.com/rkttu/WinGetSpy</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/rkttu/WinGetSpy</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>winget</PackageTags>
+		<PackageReleaseNotes>https://github.com/rkttu/WinGetSpy/releases</PackageReleaseNotes>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<IncludeSymbols>True</IncludeSymbols>
+		<SymbolPackageFormat>symbols.nupkg</SymbolPackageFormat>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>$(AssemblyName).Tests</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
+		<PackageReference Include="Yaml2JsonNode" Version="2.1.0" />
+	</ItemGroup>
+</Project>
