@@ -14,11 +14,38 @@ using System.Text.Json;
 
 namespace WinGetSpy
 {
+    /// <summary>
+    /// WinGetSpy class contains several methods that provide the functionality to spy on the WinGet package information.
+    /// </summary>
     public static class WinGetSpy
     {
+        /// <summary>
+        /// The default user agent string interact with remote server.
+        /// </summary>
         public static readonly string DefaultUserAgent = "WinGetSpy/1.0";
 
-        public static async Task<IReadOnlyList<WingetPackageInfo>> LoadCatalogAsync(bool forceCacheCompile = false, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Loads the WinGet package catalog asynchronously.
+        /// </summary>
+        /// <remarks>
+        /// This method will try to load the WinGet package catalog from the local cache first.
+        /// </remarks>
+        /// <param name="forceCacheCompile">
+        /// A value indicating whether to force to rebuild the cache with download ZIP archive.
+        /// </param>
+        /// <param name="feedInfo">
+        /// The information about the GitHub feed.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// The cancellation token to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// The collection of the WinGet package information.
+        /// </returns>
+        public static async Task<IReadOnlyList<WingetPackageInfo>> LoadCatalogAsync(
+            bool forceCacheCompile = false,
+            GitHubFeedInfo feedInfo = default,
+            CancellationToken cancellationToken = default)
         {
             var appDirectoryPath = GetCacheDirectoryPath();
 
@@ -26,26 +53,47 @@ namespace WinGetSpy
                 Directory.CreateDirectory(appDirectoryPath);
 
             var list = await TryLoadLocalWinGetPackagesCacheAsync(
-                appDirectoryPath: appDirectoryPath,
+                appDirectoryPath: appDirectoryPath, feedInfo: feedInfo,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
 
             if (forceCacheCompile || list == default)
             {
                 await CompileJsonDataFromWinGetPackageAsync(
-                    appDirectoryPath: appDirectoryPath,
+                    appDirectoryPath: appDirectoryPath, feedInfo: feedInfo,
                     cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 list = await TryLoadLocalWinGetPackagesCacheAsync(
-                    appDirectoryPath: appDirectoryPath,
+                    appDirectoryPath: appDirectoryPath, feedInfo: feedInfo,
                     cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             return list;
         }
 
+        /// <summary>
+        /// Gets the cache directory path.
+        /// </summary>
+        /// <returns>
+        /// The cache directory path.
+        /// </returns>
         public static string GetCacheDirectoryPath()
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WinGetSpy");
 
+        /// <summary>
+        /// Tries to load the local WinGet packages cache asynchronously.
+        /// </summary>
+        /// <param name="appDirectoryPath">
+        /// The path of the application directory.
+        /// </param>
+        /// <param name="feedInfo">
+        /// The information about the GitHub feed.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// The cancellation token to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// The collection of the WinGet package information.
+        /// </returns>
         public static async Task<IReadOnlyList<WingetPackageInfo>> TryLoadLocalWinGetPackagesCacheAsync(string appDirectoryPath = default, GitHubFeedInfo feedInfo = default, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(appDirectoryPath))
@@ -73,8 +121,26 @@ namespace WinGetSpy
             catch { return default; }
         }
 
+        /// <summary>
+        /// Compiles the JSON data from the GitHub WinGet ZIP package asynchronously.
+        /// </summary>
+        /// <param name="appDirectoryPath">
+        /// The path of the application directory.
+        /// </param>
+        /// <param name="feedInfo">
+        /// The information about the GitHub feed.
+        /// </param>
+        /// <param name="userAgent">
+        /// The user agent string to interact with the remote server.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// The cancellation token to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// The task object representing the asynchronous operation.
+        /// </returns>
         public static async Task CompileJsonDataFromWinGetPackageAsync(
-            string appDirectoryPath = default, GitHubFeedInfo feedInfo = default, string customUserAgent = default,
+            string appDirectoryPath = default, GitHubFeedInfo feedInfo = default, string userAgent = default,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(appDirectoryPath))
@@ -86,11 +152,11 @@ namespace WinGetSpy
             if (feedInfo == default)
                 feedInfo = new GitHubFeedInfo();
 
-            if (string.IsNullOrWhiteSpace(customUserAgent))
-                customUserAgent = DefaultUserAgent;
+            if (string.IsNullOrWhiteSpace(userAgent))
+                userAgent = DefaultUserAgent;
 
-            if (string.IsNullOrWhiteSpace(customUserAgent))
-                customUserAgent = DefaultUserAgent;
+            if (string.IsNullOrWhiteSpace(userAgent))
+                userAgent = DefaultUserAgent;
 
             var zipFilePath = Path.Combine(
                 Path.GetTempPath(),
@@ -103,7 +169,7 @@ namespace WinGetSpy
             using (var httpRequest = new HttpRequestMessage(HttpMethod.Get, wingetPkgsZipFileUrl))
             {
                 httpRequest.Headers.TryAddWithoutValidation("Accept", "application/zip");
-                httpRequest.Headers.TryAddWithoutValidation("User-Agent", customUserAgent);
+                httpRequest.Headers.TryAddWithoutValidation("User-Agent", userAgent);
 
                 if (Directory.Exists(zipFilePath))
                     Directory.Delete(zipFilePath);
@@ -135,7 +201,19 @@ namespace WinGetSpy
             }
         }
 
-        static IEnumerable<WingetPackageInfo> EnumerateWinGetPackages(string zipFilePath)
+        /// <summary>
+        /// Enumerates the WinGet packages from the winget-pkgs source ZIP file.
+        /// </summary>
+        /// <param name="zipFilePath">
+        /// The path of the winget-pkgs source ZIP file.
+        /// </param>
+        /// <returns>
+        /// The collection of the WinGet package information.
+        /// </returns>
+        /// <exception cref="FileNotFoundException">
+        /// The specified file does not exists.
+        /// </exception>
+        public static IEnumerable<WingetPackageInfo> EnumerateWinGetPackages(string zipFilePath)
         {
             if (!File.Exists(zipFilePath))
                 throw new FileNotFoundException($"File '{zipFilePath}' does not exists.");
@@ -179,29 +257,34 @@ namespace WinGetSpy
                             if (string.IsNullOrWhiteSpace(arch) || string.IsNullOrWhiteSpace(rawUrl))
                                 continue;
 
-                            switch (arch)
+                            switch (arch.ToUpperInvariant())
                             {
-                                case "x86":
+                                case "X86":
                                     if (!Uri.TryCreate(rawUrl, UriKind.Absolute, out x86InstallerUrl))
                                         continue;
                                     break;
-                                case "x64":
+
+                                case "X64":
                                     if (!Uri.TryCreate(rawUrl, UriKind.Absolute, out x64InstallerUrl))
                                         continue;
                                     break;
-                                case "arm":
+
+                                case "ARM":
                                     if (!Uri.TryCreate(rawUrl, UriKind.Absolute, out armInstallerUrl))
                                         continue;
                                     break;
-                                case "arm64":
+
+                                case "ARM64":
                                     if (!Uri.TryCreate(rawUrl, UriKind.Absolute, out arm64InstallerUrl))
                                         continue;
                                     break;
-                                case "neutral":
+
+                                case "NEUTRAL":
                                     if (!Uri.TryCreate(rawUrl, UriKind.Absolute, out Uri parsedInstallerUrl))
                                         continue;
                                     x86InstallerUrl = x64InstallerUrl = armInstallerUrl = arm64InstallerUrl = parsedInstallerUrl;
                                     break;
+
                                 default:
                                     continue;
                             }

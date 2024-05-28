@@ -2,6 +2,9 @@
 
 namespace WinGetSpy
 {
+    /// <summary>
+    /// Represents the information about the GitHub feed.
+    /// </summary>
     public sealed class GitHubFeedInfo
     {
         private Uri _baseUri = new Uri("https://github.com", UriKind.Absolute);
@@ -9,6 +12,9 @@ namespace WinGetSpy
         private string _repoName = "winget-pkgs";
         private string _branchName = "master";
 
+        /// <summary>
+        /// Gets or sets the base URI of the GitHub.com.
+        /// </summary>
         public Uri BaseUri
         {
             get => _baseUri;
@@ -24,6 +30,9 @@ namespace WinGetSpy
             }
         }
 
+        /// <summary>
+        /// Gets or sets the owner of the repository.
+        /// </summary>
         public string RepoOwner
         {
             get => _repoOwner;
@@ -36,6 +45,9 @@ namespace WinGetSpy
             }
         }
 
+        /// <summary>
+        /// Gets or sets the name of the repository.
+        /// </summary>
         public string RepoName
         {
             get => _repoName;
@@ -48,6 +60,9 @@ namespace WinGetSpy
             }
         }
 
+        /// <summary>
+        /// Gets or sets the name of the branch.
+        /// </summary>
         public string BranchName
         {
             get => _branchName;
@@ -60,9 +75,15 @@ namespace WinGetSpy
             }
         }
 
+        /// <summary>
+        /// Gets the URI of the repository ZIP file.
+        /// </summary>
         public Uri ZipArchiveUri
             => new Uri(_baseUri, new Uri($"/{_repoOwner}/{_repoName}/archive/refs/heads/{_branchName}.zip", UriKind.Relative));
 
+        /// <summary>
+        /// Gets the cache identifier for local caching.
+        /// </summary>
         public string CacheIdentifier
             => string.Join("_", "wingetspycache", _baseUri.Host, _baseUri.Port, _repoOwner, _repoName, _branchName);
     }

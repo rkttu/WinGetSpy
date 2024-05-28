@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -24,6 +24,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<!-- https://andersmadsen.dev/guides/how-to-disable-test-parallelization-in-xunit -->
 		<AssemblyAttribute Include="Xunit.CollectionBehaviorAttribute">
 			<_Parameter1>DisableTestParallelization = true</_Parameter1>
 			<_Parameter1_IsLiteral>true</_Parameter1_IsLiteral>
