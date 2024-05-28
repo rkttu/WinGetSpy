@@ -29,6 +29,7 @@ namespace WinGetSpy.KnownPackages.Productivity.Adobe
         /// <summary>
         /// Gets the latest Adobe Reader package, preferring 32-bit if specified or if the operating system is not 64-bit.
         /// </summary>
+        /// <param name="list">The list of packages to search.</param>
         /// <param name="prefer32Bit">Indicates whether to prefer the 32-bit version.</param>
         public static WinGetPackageInfo GetAdobeReader(this IReadOnlyList<WinGetPackageInfo> list, bool prefer32Bit = true)
             => prefer32Bit ? GetAdobeReader32bit(list) : Environment.Is64BitOperatingSystem ? GetAdobeReader64bit(list) : GetAdobeReader32bit(list);
