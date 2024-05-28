@@ -24,30 +24,36 @@ WinGetSpy provides the following features:
 
 ## How to use
 
-### Cache package cache and search for a package
+### Cache package data and search for a package
 
 ```csharp
+using WinGetSpy;
+
+...
+
 var searchKeyword = "Microsoft.DotNet.SDK.8";
 var matchFirstItemOnly = true;
-var forceCacheCompile = false;
+var list = await WinGetCatalogManager.LoadCatalogAsync();
 
-using var cancellationTokenSource = new CancellationTokenSource();
-var cancellationToken = cancellationTokenSource.Token;
+var searchResult = list.SearchWinGetPackage(searchKeyword, matchFirstItemOnly);
+...
+```
 
-await Console.Out.WriteLineAsync("Checking local winget-pkgs cache...".AsMemory(), cancellationToken).ConfigureAwait(false);
-var list = await WinGetSpy.TryLoadLocalWinGetPackagesCacheAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+### Get best match installer URL
 
-if (forceCacheCompile || list == default)
-{
-	await Console.Out.WriteLineAsync("Compiling winget-pkgs cache from GitHub ZIP ball...".AsMemory(), cancellationToken).ConfigureAwait(false);
-	await WinGetSpy.CompileJsonDataFromWinGetPackageAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-}
+```csharp
+using WinGetSpy;
 
-await Console.Out.WriteLineAsync("Loading pre-compiled winget-pkgs cache...".AsMemory(), cancellationToken).ConfigureAwait(false);
-list = await WinGetSpy.TryLoadLocalWinGetPackagesCacheAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+...
 
-await Console.Out.WriteLineAsync($"Total {list.Count()} packages found.".AsMemory(), cancellationToken).ConfigureAwait(false);
-list.SearchWinGetPackage(searchKeyword, matchFirstItemOnly).Dump();
+var searchKeyword = "Microsoft.DotNet.SDK.8";
+var matchFirstItemOnly = true;
+var list = await WinGetCatalogManager.LoadCatalogAsync();
+
+var searchResult = list.SearchWinGetPackage(searchKeyword, matchFirstItemOnly);
+var downloadStream = await searchResult.GetBestInstallerStreamForAsync();
+
+...
 ```
 
 ## License

@@ -15,9 +15,9 @@ using System.Text.Json;
 namespace WinGetSpy
 {
     /// <summary>
-    /// WinGetSpy class contains several methods that provide the functionality to spy on the WinGet package information.
+    /// WinGetCatalogManager class contains several methods that provide the functionality to spy on the WinGet package information.
     /// </summary>
-    public static class WinGetSpy
+    public static class WinGetCatalogManager
     {
         /// <summary>
         /// The default user agent string interact with remote server.
